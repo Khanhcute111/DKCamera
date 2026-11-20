@@ -1527,4 +1527,9 @@
     <string name="camera_looks_more">More</string>
     <string name="camera_looks_collapse">Collapse</string>
     <string name="settings_language_vietnamese">Tiếng Việt</string>
+    <string name="view_burst_photos">View burst photos</string>
+    <string name="show_reference">Show reference</string>
+    <string name="reference_photo">Reference photo</string>
+    <string name="minimize">Minimize</string>
+    <string name="ok">OK</string>
 </resources>
