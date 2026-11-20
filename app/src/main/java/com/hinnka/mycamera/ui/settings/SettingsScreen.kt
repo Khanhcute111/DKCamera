@@ -6219,7 +6219,7 @@ fun DefaultFocalLengthSetting(
                     }
                     showAddDialog = false
                     inputValue = ""
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
                 TextButton(onClick = { showAddDialog = false; inputValue = "" }) {
