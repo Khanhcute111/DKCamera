@@ -431,7 +431,7 @@ fun GalleryDetailScreen(
                             ) {
                                 Icon(
                                     imageVector = AppIcons.GridView,
-                                    contentDescription = "Gallery",
+                                    contentDescription = stringResource(R.string.gallery),
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -520,7 +520,7 @@ fun GalleryDetailScreen(
                         IconButton(onClick = { onViewBurst?.invoke(currentPhoto.id) }, modifier = Modifier.autoRotate()) {
                             Icon(
                                 imageVector = AppIcons.BurstMode,
-                                contentDescription = "查看连拍照片", // 连拍照片
+                                contentDescription = stringResource(R.string.view_burst_photos)
                                 tint = Color.White
                             )
                         }
