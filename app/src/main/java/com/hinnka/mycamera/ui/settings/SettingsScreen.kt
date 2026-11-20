@@ -214,6 +214,7 @@ private data class AppLanguageOption(
 private val APP_LANGUAGE_OPTIONS = listOf(
     AppLanguageOption("", R.string.settings_language_system),
     AppLanguageOption("en", R.string.settings_language_english),
+    AppLanguageOption("vi", R.string.settings_language_vietnamese),
     AppLanguageOption("de", R.string.settings_language_german),
     AppLanguageOption("fr", R.string.settings_language_french),
     AppLanguageOption("id", R.string.settings_language_indonesian),
