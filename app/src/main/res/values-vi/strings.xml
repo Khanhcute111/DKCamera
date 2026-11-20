@@ -166,9 +166,7 @@
     <string name="settings_video_stabilization_mode_off">Tắt</string>
     <string name="settings_video_stabilization_mode_eis">Chống rung điện tử (EIS)</string>
     <string name="settings_video_stabilization_mode_ois">Chống rung quang học (OIS)</string>
-    <string name="settings_video_stabilization_mode_enhanced">Chống rung nâng cao (EIS+)</string>
-    <string name="settings_video_microphone_title">Micro</string>
-    <string name="settings_section_quality_perf">Chất lượng và hiệu năng</string>
+    <string name="settings_video_stabilization_mode_enhanced">Chống rung nâng cao (EIS+)</string><string name="settings_section_quality_perf">Chất lượng và hiệu năng</string>
     <string name="settings_section_photo_mode">Cài đặt chế độ ảnh</string>
     <string name="settings_section_professional_mode">Cài đặt chế độ chuyên nghiệp</string>
     <string name="settings_professional_parameters">Thông số chuyên nghiệp</string>
