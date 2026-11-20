@@ -30,6 +30,10 @@ import com.hinnka.mycamera.hdr.SourceKind
 import com.hinnka.mycamera.hdr.UltraHdrWriter
 import com.hinnka.mycamera.hdr.UnifiedGainmapProducer
 import com.hinnka.mycamera.livephoto.MotionPhotoWriter
+import com.hinnka.mycamera.ml.AiDenoiseModelManager
+import com.hinnka.mycamera.ml.AiDenoiser
+import com.hinnka.mycamera.ml.HfModelSource
+import com.hinnka.mycamera.ml.HfModelState
 import com.hinnka.mycamera.lut.BaselineColorCorrectionTarget
 import com.hinnka.mycamera.lut.ChromaDenoiseDefaults
 import com.hinnka.mycamera.lut.applyEffectsToVideoFile
@@ -188,6 +192,82 @@ object GalleryManager {
     )
 
     val processingScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val autoAiUltraJobs = ConcurrentHashMap<String, Job>()
+
+    /**
+     * Runs the installed on-device AI model after the original capture has been safely saved.
+     * The source photo is never overwritten; the AI result is stored in ai_denoise.jpg.
+     */
+    private fun queueAutoAiUltra(context: Context, photoId: String) {
+        if (autoAiUltraJobs[photoId]?.isActive == true) return
+        val appContext = context.applicationContext
+        val job = processingScope.launch {
+            try {
+                val preferences = ContentRepository.getInstance(appContext).userPreferencesRepository.latest()
+                if (!preferences.aiUltraAutoProcessEnabled) return@launch
+                val source = getOriginalImageFile(appContext, photoId)
+                if (source == null || !source.isFile || source.length() <= 0L) {
+                    PLog.w(TAG, "AI Ultra skipped: source image is unavailable for $photoId")
+                    return@launch
+                }
+                val output = getAiDenoiseFile(appContext, photoId)
+                if (output.isFile && output.length() > 0L) return@launch
+
+                val modelState = AiDenoiseModelManager.observe(appContext)
+                if (!AiDenoiseModelManager.isInstalled(appContext)) {
+                    AiDenoiseModelManager.download(appContext, HfModelSource.preferred(appContext))
+                    val terminalState = modelState.first { it is HfModelState.Ready || it is HfModelState.Failed }
+                    if (terminalState !is HfModelState.Ready) {
+                        PLog.w(TAG, "AI Ultra skipped: SCUNet model download/install failed")
+                        return@launch
+                    }
+                }
+
+                withContext(Dispatchers.IO) {
+                    // Bound memory use on high-resolution sensors. The original remains untouched.
+                    val input = loadBitmap(appContext, Uri.fromFile(source), maxEdge = 4096)
+                        ?: throw IOException("Cannot decode source photo for AI Ultra")
+                    val enhanced = try {
+                        // The GPU delegate is thread-bound; create, run and close it on this IO thread.
+                        AiDenoiser.denoise(appContext, input) { progress ->
+                            if (progress >= 1f) PLog.d(TAG, "AI Ultra inference complete: $photoId")
+                        }
+                    } finally {
+                        if (!input.isRecycled) input.recycle()
+                    }
+                    val temp = File(output.parentFile, "ai_denoise.jpg.tmp")
+                    try {
+                        FileOutputStream(temp).use { stream ->
+                            if (!enhanced.compress(Bitmap.CompressFormat.JPEG, 97, stream)) {
+                                throw IOException("Failed to encode AI Ultra result")
+                            }
+                            stream.fd.sync()
+                        }
+                        if (output.exists() && !output.delete()) throw IOException("Cannot replace stale AI Ultra output")
+                        if (!temp.renameTo(output)) throw IOException("Cannot publish AI Ultra output")
+                    } finally {
+                        if (!enhanced.isRecycled) enhanced.recycle()
+                        temp.delete()
+                    }
+                }
+
+                val updated = updateMetadata(appContext, photoId) { current ->
+                    current.copy(hasAiDenoisedBase = true, aiDenoiseStrength = 1.0f)
+                }
+                if (updated == null) {
+                    output.delete()
+                    throw IOException("Could not update AI Ultra photo metadata")
+                }
+                PLog.d(TAG, "AI Ultra saved for $photoId (${output.length()} bytes)")
+                notifyPhotoLibraryChanged()
+            } catch (e: Exception) {
+                PLog.e(TAG, "Automatic AI Ultra failed for $photoId", e)
+            } finally {
+                autoAiUltraJobs.remove(photoId)
+            }
+        }
+        autoAiUltraJobs[photoId] = job
+    }
     private val gainmapProducer = UnifiedGainmapProducer()
 
     @Volatile
@@ -453,6 +533,7 @@ object GalleryManager {
         _processingPhotos.update { it - photoId }
         PLog.d(TAG, "Finished processing photo: $photoId, saved=$saved")
         notifyPhotoLibraryChanged()
+        if (saved) queueAutoAiUltra(context, photoId)
     }
     private val hdrWorkLock = Any()
     private val hdrWorkCounts = ConcurrentHashMap<String, Int>()
