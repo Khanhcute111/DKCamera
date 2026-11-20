@@ -811,4 +811,5 @@
     <string name="hdr_strength_update_failed">Không thể cập nhật cường độ HDR</string>
     <string name="ghost_mode">Chế độ Phantom</string>
     <string name="close_ghost_mode">Đóng chế độ Phantom</string>
+    <string name="settings_language_vietnamese">Tiếng Việt</string>
 </resources>
