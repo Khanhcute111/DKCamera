@@ -11,7 +11,7 @@ android {
     ndkVersion = "29.0.14206865"
 
     defaultConfig {
-        applicationId = "com.hinnka.mycamera"
+        applicationId = "com.dkstudio.dkcamera"
         minSdk = 30
         targetSdk = 36
         versionCode = 168
