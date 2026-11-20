@@ -1,10 +1,12 @@
-# Photon Camera
+# DKCaMera
 
 [English](./README_EN.md) | [简体中文](./README_CN.md) | [日本語](./README_JA.md)
 
 [![Google Play](https://img.shields.io/badge/Google%20Play-Get%20it%20on-green?logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.hinnka.mycamera)
 
-Photon Camera is an open-source Android camera application focused on static photography, designed to simulate the handling and image quality of modern mirrorless digital cameras.
+DKCaMera is a personal Android camera project customized from the open-source Photon Camera codebase. It focuses on natural-looking photography, practical manual controls, and image enhancement that preserves realistic details.
+
+Original upstream project: https://github.com/bjzhou/PhotonCamera. Third-party components and assets remain subject to their respective licenses.
 
 ## 🌟 Key Features
 
