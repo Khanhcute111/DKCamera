@@ -1500,6 +1500,10 @@ fun CameraScreen(
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        AiCompositionAssistant(
+                            viewModel = viewModel,
+                            modifier = Modifier.fillMaxSize()
+                        )
                         multipleExposureState.previewBitmap?.let { previewBitmap ->
                             Image(
                                 bitmap = previewBitmap.asImageBitmap(),
