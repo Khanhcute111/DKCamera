@@ -90,7 +90,7 @@ fun ToolboxScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
