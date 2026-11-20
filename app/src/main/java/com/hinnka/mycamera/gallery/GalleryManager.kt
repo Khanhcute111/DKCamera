@@ -216,7 +216,7 @@ object GalleryManager {
                 val modelState = AiDenoiseModelManager.observe(appContext)
                 if (!AiDenoiseModelManager.isInstalled(appContext)) {
                     AiDenoiseModelManager.download(appContext, HfModelSource.preferred(appContext))
-                    val terminalState = modelState.first { it is HfModelState.Ready || it is HfModelState.Failed }
+                    val terminalState = modelState.firstOrNull { it is HfModelState.Ready || it is HfModelState.Failed }
                     if (terminalState !is HfModelState.Ready) {
                         PLog.w(TAG, "AI Ultra skipped: SCUNet model download/install failed")
                         return@launch
