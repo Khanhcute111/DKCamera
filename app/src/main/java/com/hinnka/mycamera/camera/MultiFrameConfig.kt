@@ -45,6 +45,31 @@ object MultiFrameConfig {
         return frameCount.coerceIn(MIN_DENOISE_FRAME_COUNT, MAX_FRAME_COUNT)
     }
 
+    /**
+     * Conservative zoom-aware burst plan for handheld phones. More source frames improve
+     * temporal denoising/detail fusion; cap at nine to avoid unbounded heat and shutter lag.
+     */
+    fun zoomAdaptiveFrameCount(baseCount: Int, visibleZoom: Float): Int {
+        val base = baseCount.coerceIn(1, MAX_FRAME_COUNT)
+        if (!visibleZoom.isFinite() || visibleZoom < 2f) return base
+        val target = when {
+            visibleZoom >= 5.5f -> 9
+            visibleZoom >= 3.5f -> 7
+            else -> 5
+        }
+        return maxOf(base, target).coerceAtMost(9)
+    }
+
+    /** Increase merged output sampling only once digital zoom becomes significant. */
+    fun zoomAdaptiveOutputScale(baseScale: Float, visibleZoom: Float): Float {
+        val target = when {
+            !visibleZoom.isFinite() || visibleZoom < 2f -> baseScale
+            visibleZoom >= 3f -> 2f
+            else -> 1.5f
+        }
+        return normalizeOutputScale(target, fallback = baseScale)
+    }
+
     fun normalizeHdrPlusFrameCount(
         frameCount: Int,
         bracketExposureEnabled: Boolean = false,
