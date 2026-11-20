@@ -160,6 +160,7 @@ class UserPreferences internal constructor(
     var deletedBuiltInIds by string("deleted_built_in_ids", "")
     var showLevelIndicator by bool("show_level_indicator", false)  // 水平仪显示
     var aiCompositionEnabled by bool("ai_composition_enabled", false)  // AI 构图助手开关
+    var aiUltraAutoProcessEnabled by bool("ai_ultra_auto_process_enabled", true)  // 自动 AI Ultra 后期处理
     var focusPeakingEnabled by bool("focus_peaking_enabled", true)  // 手动对焦峰值显示
     var showHistogram by bool("show_histogram", true)
     var showGrid by bool("show_grid", false)  // 网格线显示
