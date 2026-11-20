@@ -79,4 +79,20 @@ class MultiFrameExposurePlannerTest {
         assertTrue(plan.shutterUpperLimited)
         assertTrue(plan.upperLimitsProduceLowerExposureThanBase)
     }
+
+    @Test
+    fun zoomAdaptiveBurstUsesMoreFramesForDistantSubjects() {
+        assertEquals(4, MultiFrameConfig.zoomAdaptiveFrameCount(4, 1f))
+        assertEquals(5, MultiFrameConfig.zoomAdaptiveFrameCount(4, 2.5f))
+        assertEquals(7, MultiFrameConfig.zoomAdaptiveFrameCount(4, 4f))
+        assertEquals(9, MultiFrameConfig.zoomAdaptiveFrameCount(4, 8f))
+        assertEquals(9, MultiFrameConfig.zoomAdaptiveFrameCount(15, 8f).coerceAtMost(9))
+    }
+
+    @Test
+    fun zoomAdaptiveOutputScaleReturnsToBaseAtLowZoom() {
+        assertEquals(1.25f, MultiFrameConfig.zoomAdaptiveOutputScale(1.25f, 1f), 0f)
+        assertEquals(1.5f, MultiFrameConfig.zoomAdaptiveOutputScale(1f, 2.5f), 0f)
+        assertEquals(2f, MultiFrameConfig.zoomAdaptiveOutputScale(1f, 5f), 0f)
+    }
 }
