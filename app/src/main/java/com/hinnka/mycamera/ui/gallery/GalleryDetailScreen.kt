@@ -520,7 +520,7 @@ fun GalleryDetailScreen(
                         IconButton(onClick = { onViewBurst?.invoke(currentPhoto.id) }, modifier = Modifier.autoRotate()) {
                             Icon(
                                 imageVector = AppIcons.BurstMode,
-                                contentDescription = stringResource(R.string.view_burst_photos)
+                                contentDescription = stringResource(R.string.view_burst_photos),
                                 tint = Color.White
                             )
                         }
