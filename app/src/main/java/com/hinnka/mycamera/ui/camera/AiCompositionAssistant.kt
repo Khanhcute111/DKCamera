@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hinnka.mycamera.data.UserPreferences
+import com.hinnka.mycamera.ui.prefs.rememberPreference
 import com.hinnka.mycamera.ml.BlazeFaceDetector
 import com.hinnka.mycamera.viewmodel.CameraViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +46,7 @@ internal fun AiCompositionAssistant(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    var enabled by remember { mutableStateOf(false) }
+    var enabled by rememberPreference(UserPreferences::aiCompositionEnabled)
     var faceBox by remember { mutableStateOf<RectF?>(null) }
     var guidance by remember { mutableStateOf("Đang tìm khuôn mặt…") }
     val detector = remember(context) {
