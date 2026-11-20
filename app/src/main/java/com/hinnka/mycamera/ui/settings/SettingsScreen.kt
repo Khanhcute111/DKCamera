@@ -344,6 +344,7 @@ fun SettingsScreen(
     val customAspectRatios by preferenceValue { it.customAspectRatios }
     val availablePhotoAspectRatios by viewModel.availablePhotoAspectRatios.collectAsState()
     var autoSaveAfterCapture by rememberPreference(UserPreferences::autoSaveAfterCapture)
+    var aiUltraAutoProcessEnabled by rememberPreference(UserPreferences::aiUltraAutoProcessEnabled)
     var nrLevel by rememberPreference(UserPreferences::nrLevel)
     var edgeLevel by rememberPreference(UserPreferences::edgeLevel)
     val retainCaptureSettings by preferenceValue { it.retainCaptureSettings }
@@ -1545,6 +1546,18 @@ fun SettingsScreen(
                             description = stringResource(R.string.settings_auto_save_description),
                             checked = autoSaveAfterCapture,
                             onCheckedChange = { autoSaveAfterCapture = it }
+                        )
+
+                        HorizontalDivider(
+                            color = Color.White.copy(alpha = 0.1f),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+
+                        SwitchSettingItem(
+                            title = "AI Ultra tự động sau khi chụp",
+                            description = "Tự tải mô hình AI và xử lý ảnh trên điện thoại; ảnh gốc luôn được giữ riêng.",
+                            checked = aiUltraAutoProcessEnabled,
+                            onCheckedChange = { aiUltraAutoProcessEnabled = it }
                         )
 
                         HorizontalDivider(
