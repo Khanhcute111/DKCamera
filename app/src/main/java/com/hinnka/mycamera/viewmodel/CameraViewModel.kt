@@ -3504,8 +3504,21 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
 
         val useRawStack = prefs.useRawMax && prefs.useRaw &&
             cameraState.isRawSupported && cameraState.isRawMultiFrameSupported
-        val useJpegStack = prefs.useJpgMax && !prefs.useRaw
-        if (!useRawStack && !useJpegStack) return
+        // If the user is shooting JPEG, automatically engage the existing multi-frame
+        // fusion path from 2x zoom even when JPGmax was not manually enabled.
+        val autoZoomJpegStack = !prefs.useRaw && visibleZoom.isFinite() && visibleZoom >= 2f
+        val useJpegStack = !prefs.useRaw && (prefs.useJpgMax || autoZoomJpegStack)
+
+        if (!useRawStack && !useJpegStack) {
+            // Restore the normal single-frame path when zoom drops below the AI-zoom threshold.
+            if (!prefs.useJpgMax && !prefs.useRawMax) {
+                cameraController.setMultiFrameOutputScale(null)
+                cameraController.setJpgMultiFrameDenoiseFrameCount(
+                    prefs.jpgMultiFrameDenoiseFrameCount
+                )
+            }
+            return
+        }
 
         if (useRawStack) {
             val count = MultiFrameConfig.zoomAdaptiveFrameCount(
