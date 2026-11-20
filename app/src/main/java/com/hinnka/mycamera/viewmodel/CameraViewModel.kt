@@ -3486,12 +3486,60 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
         zoomRatioByMain = ratio
         val cameraInfo = state.value.getCurrentCameraInfo()
         setCameraControllerZoomRatio(ratio, cameraInfo)
+        applyZoomAdaptiveMultiFrameEnhancement(ratio)
+    }
+
+    /**
+     * When JPGmax/RAWmax is already enabled, spend more capture frames and output samples
+     * on distant subjects. The user's saved base settings are never overwritten.
+     */
+    private fun applyZoomAdaptiveMultiFrameEnhancement(visibleZoom: Float) {
+        val prefs = userPreferencesRepository.current
+        val cameraState = state.value
+        if (cameraState.captureMode != CaptureMode.PHOTO ||
+            prefs.captureMode != CaptureMode.PHOTO ||
+            prefs.useMultipleExposure ||
+            cameraState.useMultipleExposure
+        ) return
+
+        val useRawStack = prefs.useRawMax && prefs.useRaw &&
+            cameraState.isRawSupported && cameraState.isRawMultiFrameSupported
+        val useJpegStack = prefs.useJpgMax && !prefs.useRaw
+        if (!useRawStack && !useJpegStack) return
+
+        if (useRawStack) {
+            val count = MultiFrameConfig.zoomAdaptiveFrameCount(
+                prefs.hdrPlusFrameCount,
+                visibleZoom,
+            )
+            cameraController.setHdrPlusFrameCount(count)
+            val requestedScale = MultiFrameConfig.zoomAdaptiveOutputScale(
+                prefs.rawMaxOutputScale,
+                visibleZoom,
+            )
+            cameraController.setMultiFrameOutputScale(
+                prefs.rawOutputUpscaleMode.resolveOutputScale(requestedScale)
+            )
+        } else {
+            val count = MultiFrameConfig.zoomAdaptiveFrameCount(
+                prefs.jpgMultiFrameDenoiseFrameCount,
+                visibleZoom,
+            )
+            cameraController.setJpgMultiFrameDenoiseFrameCount(count)
+            cameraController.setMultiFrameOutputScale(
+                MultiFrameConfig.zoomAdaptiveOutputScale(
+                    prefs.jpgMultiFrameDenoiseOutputScale,
+                    visibleZoom,
+                )
+            )
+        }
     }
 
     private fun setZoomRatioForCamera(ratio: Float, cameraId: String) {
         zoomRatioByMain = ratio
         val cameraInfo = state.value.availableCameras.find { it.cameraId == cameraId }
         setCameraControllerZoomRatio(ratio, cameraInfo)
+        applyZoomAdaptiveMultiFrameEnhancement(ratio)
     }
 
     private fun setCameraControllerZoomRatio(ratio: Float, cameraInfo: CameraInfo?) {
