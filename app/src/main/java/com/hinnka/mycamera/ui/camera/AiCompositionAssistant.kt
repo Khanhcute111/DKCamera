@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -40,7 +39,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
-import kotlin.math.max
 
 private data class SceneReadout(
     val title: String,
@@ -146,7 +144,7 @@ internal fun AiCompositionAssistant(
                             val subject = detections.maxByOrNull {
                                 it.box.width().coerceAtLeast(0f) * it.box.height().coerceAtLeast(0f)
                             }
-                            readout to subject?.box?.let(::RectF)
+                            readout to subject?.box?.let { RectF(it) }
                         }
                         scene = analysis.first
                         faceBox = analysis.second
