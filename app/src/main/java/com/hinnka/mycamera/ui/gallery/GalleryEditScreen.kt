@@ -803,7 +803,7 @@ fun GalleryEditScreen(
                             ) {
                                 Icon(
                                     imageVector = AppIcons.PushPin,
-                                    contentDescription = "Show Reference",
+                                    contentDescription = stringResource(R.string.show_reference),
                                     tint = AccentColor,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -826,7 +826,7 @@ fun GalleryEditScreen(
                                             .data(url)
                                             .placeholder(R.mipmap.ic_launcher)
                                             .build(),
-                                        contentDescription = "Reference Photo",
+                                        contentDescription = stringResource(R.string.reference_photo),
                                         modifier = Modifier
                                             .fillMaxWidth(),
                                         contentScale = ContentScale.FillWidth
@@ -849,7 +849,7 @@ fun GalleryEditScreen(
                                         ) {
                                             Icon(
                                                 imageVector = AppIcons.PushPin,
-                                                contentDescription = "Minimize",
+                                                contentDescription = stringResource(R.string.minimize),
                                                 tint = Color.White,
                                                 modifier = Modifier.size(12.dp)
                                             )
@@ -868,7 +868,7 @@ fun GalleryEditScreen(
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.Close,
-                                                contentDescription = "Close",
+                                                contentDescription = stringResource(R.string.close),
                                                 tint = Color.White,
                                                 modifier = Modifier.size(12.dp)
                                             )
