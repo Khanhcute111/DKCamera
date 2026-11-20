@@ -1,34 +1,16 @@
-<!-- Single-color silhouette for themed icons; details are cut out so the shape survives alpha-only tinting -->
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="80"
-    android:viewportHeight="48">
-  <group android:scaleX="0.46444446"
-      android:scaleY="0.27866668"
-      android:translateX="21.422222"
-      android:translateY="17.312">
-    <!-- Shutter button -->
+    android:viewportWidth="108"
+    android:viewportHeight="108">
     <path
-        android:pathData="M52,0L65,0L65,8L52,8Z"
-        android:fillColor="#FFFFFFFF"/>
-    <!-- Top plate -->
-    <path
-        android:pathData="M12,5L30,5C31,5 32,5.5 32,6L32,8L10,8L10,6C10,5.5 11,5 12,5Z"
-        android:fillColor="#FFFFFFFF"/>
-    <!-- Body with lens opening and flash window cut out -->
-    <path
-        android:pathData="M0,12C0,9.8 1.8,8 4,8L76,8C78.2,8 80,9.8 80,12L80,44C80,46.2 78.2,48 76,48L4,48C1.8,48 0,46.2 0,44Z M26,28A14,14 0,1 1,54,28A14,14 0,1 1,26,28Z M62,10L72,10C73.1,10 74,10.9 74,12L74,18C74,19.1 73.1,20 72,20L62,20C60.9,20 60,19.1 60,18L60,12C60,10.9 60.9,10 62,10Z"
         android:fillColor="#FFFFFFFF"
-        android:fillType="evenOdd"/>
-    <!-- Lens ring -->
-    <path
-        android:pathData="M29,28A11,11 0,1 1,51,28A11,11 0,1 1,29,28Z M33,28A7,7 0,1 1,47,28A7,7 0,1 1,33,28Z"
-        android:fillColor="#FFFFFFFF"
-        android:fillType="evenOdd"/>
-    <!-- Lens highlight -->
-    <path
-        android:pathData="M35.4,25A1.6,1.6 0,1 1,38.6,25A1.6,1.6 0,1 1,35.4,25Z"
-        android:fillColor="#FFFFFFFF"/>
-  </group>
+        android:fillType="evenOdd"
+        android:pathData="M54,18 A36,36 0,1 1,53.9 18 M54,27 A27,27 0,1 0,54.1 27 M54,39 A15,15 0,1 1,53.9 39 M54,48 A6,6 0,1 0,54.1 48" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M52,25 C62,24 70,31 73,40 L58,51 L49,43 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M78,43 C84,52 81,64 74,71 L57,57 L63,47 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M72,77 C64,85 52,86 43,81 L50,60 L60,58 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M38,79 C28,74 23,63 26,53 L48,53 L51,64 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M26,47 C29,36 38,28 49,27 L54,49 L43,56 Z" />
 </vector>
