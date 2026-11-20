@@ -1462,4 +1462,9 @@
     <string name="settings_orientation_90">90°</string>
     <string name="settings_orientation_180">180°</string>
     <string name="settings_orientation_270">270°</string>
+    <string name="view_burst_photos">Xem ảnh chụp liên tiếp</string>
+    <string name="show_reference">Hiện ảnh tham chiếu</string>
+    <string name="reference_photo">Ảnh tham chiếu</string>
+    <string name="minimize">Thu nhỏ</string>
+    <string name="ok">Đồng ý</string>
 </resources>
