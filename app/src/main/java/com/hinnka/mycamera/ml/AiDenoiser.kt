@@ -17,20 +17,16 @@ import java.io.FileInputStream
 import java.nio.channels.FileChannel
 
 /**
- * AI denoise with SCUNet real_psnr at half resolution (see docs/scunet-tflite.md and
- * docs/ai-denoise-half-resolution.md).
+ * Detail-preserving local AI denoise using SCUNet real_psnr.
  *
- * 1. The image is box-downsampled 2x (an exact 2x2 average, which also halves the noise; odd
- *    sizes are padded by repeating the last row / column).
- * 2. SCUNet real_psnr (trained on real camera noise) denoises the half-resolution image in
- *    overlapping 256 x 256 tiles. Model contract: float32 NHWC [1, 256, 256, 3] RGB in [0, 1]
- *    -> same shape; the tile size is part of the model (shifted-window attention mask).
- * 3. MGC V25 RAISR ([MgcRaisrUpscale], resample rate 2) restores full resolution; on real high
- *    ISO photos it is closer to a full-resolution pass than bicubic or Lanczos-3 and restores
- *    edge acuity.
+ * Photos up to 12 MP are processed at native resolution in overlapping 256 x 256 tiles, avoiding
+ * the half-resolution softening and synthetic edge reconstruction of the old always-downsample
+ * pipeline. Larger photos use the memory-bounded 2x downsample + SCUNet + MGC RAISR path.
+ * Model contract: float32 NHWC [1, 256, 256, 3] RGB in [0, 1] -> same shape; tile size is part of
+ * the model (shifted-window attention mask).
  *
- * About a quarter of the compute of full-resolution SCUNet. [denoise] creates, uses and closes the
- * backend on the calling thread: the LiteRT GPU model is bound to the thread that created it.
+ * [denoise] creates, uses and closes the backend on the calling thread: the LiteRT GPU model is
+ * bound to the thread that created it.
  */
 object AiDenoiser {
     private const val TAG = "AiDenoiser"
@@ -42,8 +38,8 @@ object AiDenoiser {
     /** Minimum overlap between neighbouring tiles; blended with smoothstep weights. */
     private const val OVERLAP = 32
 
-    /** Share of the progress bar taken by the model; RAISR and the blend take the rest. */
-    private const val MODEL_PROGRESS = 0.9f
+    /** Model occupies the full progress bar; no post-model resampling is used at native resolution. */
+    private const val MODEL_PROGRESS = 1f
 
     init {
         System.loadLibrary("my-native-lib")
@@ -66,22 +62,30 @@ object AiDenoiser {
         }
         try {
             val startMs = SystemClock.elapsedRealtime()
-            val low = boxDownsample(source)
-            val denoisedLow = try {
+            // Full-resolution SCUNet preserves fine texture on common phone photos. Keep the
+            // previous tiled low-memory route for very large 50/200 MP images.
+            val useNativeResolution = source.width.toLong() * source.height.toLong() <= 12_000_000L
+            val modelInput = if (useNativeResolution) source else boxDownsample(source)
+            val denoised = try {
                 createBackend(context).use { backend ->
-                    runTiles(backend, low) { onProgress(it * MODEL_PROGRESS) }
+                    runTiles(backend, modelInput) { onProgress(it * MODEL_PROGRESS) }
                 }
             } finally {
-                low.recycle()
+                if (modelInput !== source) modelInput.recycle()
             }
             val modelMs = SystemClock.elapsedRealtime() - startMs
-            val upscaled = try {
-                MgcRaisrUpscale().upscale(denoisedLow, SCALE.toFloat())
-                    ?: error("RAISR upscale failed for ${denoisedLow.width}x${denoisedLow.height}")
-            } finally {
-                denoisedLow.recycle()
+            val result = if (useNativeResolution) {
+                source.colorSpace?.let(denoised::setColorSpace)
+                denoised
+            } else {
+                val upscaled = try {
+                    MgcRaisrUpscale().upscale(denoised, SCALE.toFloat())
+                        ?: error("RAISR upscale failed for ${denoised.width}x${denoised.height}")
+                } finally {
+                    denoised.recycle()
+                }
+                cropToInput(source, upscaled)
             }
-            val result = cropToInput(source, upscaled)
             onProgress(1f)
             PLog.d(
                 TAG,

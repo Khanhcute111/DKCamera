@@ -299,6 +299,23 @@ class Camera2Controller(private val context: Context) {
 
     private var cameraThread: HandlerThread? = null
     private var cameraHandler: Handler? = null
+
+    // Coalesce rapid UI zoom callbacks so a fast pinch/slider gesture cannot flood the
+    // CameraBackground queue with stale crop requests. The latest value is applied at
+    // most once per display frame (about 60 Hz).
+    private val zoomDispatchLock = Any()
+    private var pendingZoomRatio: Float? = null
+    private var zoomDispatchScheduled = false
+    private val zoomDispatchRunnable = Runnable {
+        val latestRatio = synchronized(zoomDispatchLock) {
+            val latest = pendingZoomRatio
+            pendingZoomRatio = null
+            zoomDispatchScheduled = false
+            latest
+        }
+        latestRatio?.let(::setZoomRatio)
+    }
+
     private val burstGyroRecorder = BurstGyroRecorder(context)
 
     private val cameraCharacteristicsCache = ConcurrentHashMap<String, CameraCharacteristics>()
@@ -6381,8 +6398,12 @@ class Camera2Controller(private val context: Context) {
     fun setZoomRatio(ratio: Float) {
         val handler = cameraHandler
         if (handler != null && Looper.myLooper() != handler.looper) {
-            handler.post {
-                setZoomRatio(ratio)
+            synchronized(zoomDispatchLock) {
+                pendingZoomRatio = ratio
+                if (!zoomDispatchScheduled) {
+                    zoomDispatchScheduled = true
+                    handler.postDelayed(zoomDispatchRunnable, 16L)
+                }
             }
             return
         }
@@ -7248,6 +7269,20 @@ class Camera2Controller(private val context: Context) {
         creativeRecipeParams: ColorRecipeParams? = null,
         orientationOffsetDegrees: Int = 0
     ) {
+        // Encoder, muxer and GL renderer preparation is synchronous. The shutter callback
+        // originates on the UI thread, so marshal the entire preparation to CameraBackground
+        // to prevent the camera screen from freezing while recording is initialized.
+        val handler = cameraHandler
+        if (handler != null && Looper.myLooper() != handler.looper) {
+            handler.post {
+                startVideoRecording(
+                    creativeLutConfig = creativeLutConfig,
+                    creativeRecipeParams = creativeRecipeParams,
+                    orientationOffsetDegrees = orientationOffsetDegrees,
+                )
+            }
+            return
+        }
         if (_state.value.captureMode != CaptureMode.VIDEO ||
             _state.value.videoRecordingState.isRecording ||
             _state.value.videoRecordingState.isProcessing

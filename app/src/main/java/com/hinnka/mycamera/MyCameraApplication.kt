@@ -37,8 +37,13 @@ class MyCameraApplication : Application() {
             BuglyHelper.init(this)
         }
         val contentRepository = ContentRepository.getInstance(this)
-        StartupTrace.measure("ContentRepository.initialize") {
-            contentRepository.initialize()
+        // Loading LUTs, frames and DCP profiles scans bundled assets and can take
+        // hundreds of milliseconds on mid-range devices. Never do this on the main
+        // thread: publish the repository's StateFlows as the background load completes.
+        applicationScope.launch(Dispatchers.IO) {
+            StartupTrace.measure("ContentRepository.initialize") {
+                contentRepository.initialize()
+            }
         }
         phantomService = StartupTrace.measure("PhantomService()") {
             PhantomService(this)
