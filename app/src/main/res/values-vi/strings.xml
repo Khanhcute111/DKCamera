@@ -1378,6 +1378,11 @@
     <string name="fotufilm_value_years">%1$s năm</string>
     <string name="ai_denoise_model_title">Mô hình AI MAX</string>
     <string name="ai_denoise_model_description">AI MAX cần mô hình SCUNet (khoảng 47 MB). Tải về điện thoại một lần? AI chạy trực tiếp trên máy; ảnh của bạn không bị tải lên máy chủ. Mô hình được lưu trong vùng dữ liệu riêng của ứng dụng.</string>
+    <string name="ai_super_resolution_action">AI ULTRA 4x — Phóng đại và tái tạo chi tiết</string>
+    <string name="ai_super_resolution_processing">AI đang phóng đại 4x... %1$.1f%%</string>
+    <string name="ai_super_resolution_failed">AI Super Resolution 4x thất bại. Ảnh gốc vẫn được giữ nguyên.</string>
+    <string name="ai_super_resolution_model_title">Mô hình AI Super Resolution 4x</string>
+    <string name="ai_super_resolution_model_description">Tải mô hình EDSR x4 khoảng 7,7 MB một lần. Xử lý GPU trực tiếp trên điện thoại; ảnh không được tải lên máy chủ. Tạo bản xuất mới, không ghi đè ảnh gốc.</string>
     <string name="hf_model_downloading">Đang tải mô hình… %1$d%%</string>
     <string name="hf_model_installing">Đang xác minh và cài đặt mô hình…</string>
     <string name="hf_model_failed">Không thể tải hoặc xác minh mô hình. Hãy kiểm tra kết nối rồi thử lại.</string>
