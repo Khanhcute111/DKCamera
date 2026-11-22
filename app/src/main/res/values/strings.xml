@@ -1105,7 +1105,7 @@
     <string name="depth_model_retry">Retry</string>
     <string name="depth_model_done">Done</string>
     <string name="ai_denoise_title">AI MAX Enhancement</string>
-    <string name="ai_denoise_description">On-device SCUNet neural denoising with RAISR detail reconstruction. Photo processing stays on this phone; no image upload.</string>
+    <string name="ai_denoise_description">SCUNet full-resolution AI denoising for photos up to 12 MP, with a memory-safe tiled path for larger photos. Processing stays on this phone; no image upload.</string>
     <string name="ai_denoise_processing">Processing... %1$.1f%%</string>
     <string name="ai_denoise_failed">AI MAX processing failed. The original photo is unchanged.</string>
 
