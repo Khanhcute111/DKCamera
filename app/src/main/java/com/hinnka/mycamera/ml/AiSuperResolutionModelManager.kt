@@ -10,13 +10,14 @@ object AiSuperResolutionModelManager : HfModelInstaller(
     tag = "AiSuperResolutionModelManager",
     directory = "ml_models/edsr_x4",
     fileName = "edsr.tflite",
-    expectedSizeBytes = 7_710_000L,
+    expectedSizeBytes = 7_714_836L,
     sha256 = "77fdb8655436844e94187ce6675f5c8c73ed5bf3080327d8ebe96e15da829bde",
     path = "/litert-community/EDSR-x4-LiteRT/resolve/553600d/edsr.tflite",
     legacyDirectories = emptyList(),
-    checkContract = ::checkContract,
-) {
-    private fun checkContract(interpreter: Interpreter) {
+    checkContract = ::checkEdsrContract,
+)
+
+private fun checkEdsrContract(interpreter: Interpreter) {
         check(interpreter.inputTensorCount == 1 && interpreter.outputTensorCount == 1) {
             "EDSR x4 must have one input and one output"
         }
@@ -28,5 +29,4 @@ object AiSuperResolutionModelManager : HfModelInstaller(
         }
         check(interpreter.getInputTensor(0).dataType() == org.tensorflow.lite.DataType.FLOAT32)
         check(interpreter.getOutputTensor(0).dataType() == org.tensorflow.lite.DataType.FLOAT32)
-    }
 }
