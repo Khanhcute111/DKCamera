@@ -58,8 +58,12 @@ object AiDenoiser {
         input: Bitmap,
         onProgress: (Float) -> Unit,
     ): Bitmap {
-        val source = if (input.config == Bitmap.Config.ARGB_8888) input else input.copy(Bitmap.Config.ARGB_8888, false)
-            ?: error("Failed to convert ${input.config} bitmap to ARGB_8888")
+        val source = try {
+            if (input.config == Bitmap.Config.ARGB_8888) input else input.copy(Bitmap.Config.ARGB_8888, false)
+                ?: error("Failed to convert ${input.config} bitmap to ARGB_8888")
+        } catch (error: OutOfMemoryError) {
+            throw IllegalStateException("AI MAX cannot allocate a working image. Close other apps or use a smaller photo.", error)
+        }
         try {
             val startMs = SystemClock.elapsedRealtime()
             val low = boxDownsample(source)
@@ -85,6 +89,12 @@ object AiDenoiser {
                     "model=${modelMs}ms total=${SystemClock.elapsedRealtime() - startMs}ms"
             )
             return result
+        } catch (error: OutOfMemoryError) {
+            PLog.e(TAG, "AI MAX ran out of memory while processing ${source.width}x${source.height}", error)
+            throw IllegalStateException(
+                "AI MAX ran out of memory for this photo. The original image has not been changed.",
+                error,
+            )
         } finally {
             if (source !== input) source.recycle()
         }
