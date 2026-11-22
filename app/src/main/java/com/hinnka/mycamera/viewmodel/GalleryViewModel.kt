@@ -494,6 +494,11 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     private val _aiDenoiseProgress = MutableStateFlow(0f)
     val aiDenoiseProgress = _aiDenoiseProgress.asStateFlow()
 
+    private val _isAiSuperResolving = MutableStateFlow(false)
+    val isAiSuperResolving = _isAiSuperResolving.asStateFlow()
+    private val _aiSuperResolutionProgress = MutableStateFlow(0f)
+    val aiSuperResolutionProgress = _aiSuperResolutionProgress.asStateFlow()
+
     private var bokehJob: Job? = null
 
     private val _isBokehProcessing = MutableStateFlow(false)
@@ -738,6 +743,45 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
             } catch (e: Exception) {
                 PLog.e(TAG, "Failed to apply AI denoise", e)
                 _isAiDenoising.value = false
+                withContext(Dispatchers.Main) { onComplete(false) }
+            }
+        }
+    }
+
+    /**
+     * Creates a separate 4x AI super-resolution export. The source photo is never overwritten.
+     */
+    fun applyAiSuperResolution(photo: MediaData, onComplete: (Boolean) -> Unit) {
+        if (_isAiSuperResolving.value || photo.isVideo) return
+        if (!requireEditPurchase()) return
+        _isAiSuperResolving.value = true
+        _aiSuperResolutionProgress.value = 0f
+        viewModelScope.launch(Dispatchers.IO) {
+            val context = getApplication<Application>()
+            var source: Bitmap? = null
+            var enhanced: Bitmap? = null
+            try {
+                source = GalleryManager.loadBitmap(context, photo.uri)
+                    ?: throw IllegalStateException("Không đọc được ảnh gốc.")
+                enhanced = com.hinnka.mycamera.ml.AiSuperResolution.upscale4x(context, source) {
+                    _aiSuperResolutionProgress.value = it
+                }
+                source.recycle()
+                source = null
+                val result = enhanced
+                enhanced = null
+                withContext(Dispatchers.Main) {
+                    exportPhoto(photo, result, "AI_ULTRA_4X") { success ->
+                        if (!result.isRecycled) result.recycle()
+                        _isAiSuperResolving.value = false
+                        onComplete(success)
+                    }
+                }
+            } catch (error: Exception) {
+                PLog.e(TAG, "AI Super Resolution 4x failed", error)
+                source?.takeIf { !it.isRecycled }?.recycle()
+                enhanced?.takeIf { !it.isRecycled }?.recycle()
+                _isAiSuperResolving.value = false
                 withContext(Dispatchers.Main) { onComplete(false) }
             }
         }
