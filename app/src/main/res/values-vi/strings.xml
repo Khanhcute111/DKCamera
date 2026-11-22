@@ -908,7 +908,7 @@
     <string name="depth_model_retry">Thử lại</string>
     <string name="depth_model_done">Xong</string>
     <string name="ai_denoise_title">AI MAX — Nâng cấp ảnh</string>
-    <string name="ai_denoise_description">SCUNet khử nhiễu bằng AI trên điện thoại, kết hợp RAISR tái tạo chi tiết. Ảnh được xử lý hoàn toàn cục bộ, không tải ảnh lên máy chủ.</string>
+    <string name="ai_denoise_description">SCUNet xử lý ảnh ở độ phân giải gốc với ảnh đến 12 MP để giữ chi tiết; ảnh lớn hơn dùng chế độ chia ô tiết kiệm bộ nhớ. Toàn bộ xử lý chạy trên điện thoại, không tải ảnh lên máy chủ.</string>
     <string name="ai_denoise_processing">Đang xử lý... %1$.1f%%</string>
     <string name="ai_denoise_failed">AI MAX xử lý thất bại. Ảnh gốc vẫn được giữ nguyên.</string>
     <string name="metering_mode">Đo sáng</string>
