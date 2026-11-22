@@ -907,10 +907,10 @@
     <string name="depth_model_download_ready">Mô hình độ sâu đã sẵn sàng.</string>
     <string name="depth_model_retry">Thử lại</string>
     <string name="depth_model_done">Xong</string>
-    <string name="ai_denoise_title">Khử nhiễu AI chuyên sâu</string>
-    <string name="ai_denoise_description">Sử dụng mạng nơ-ron để tái tạo chi tiết ảnh</string>
+    <string name="ai_denoise_title">AI MAX — Nâng cấp ảnh</string>
+    <string name="ai_denoise_description">SCUNet khử nhiễu bằng AI trên điện thoại, kết hợp RAISR tái tạo chi tiết. Ảnh được xử lý hoàn toàn cục bộ, không tải ảnh lên máy chủ.</string>
     <string name="ai_denoise_processing">Đang xử lý... %1$.1f%%</string>
-    <string name="ai_denoise_failed">Khử nhiễu AI thất bại</string>
+    <string name="ai_denoise_failed">AI MAX xử lý thất bại. Ảnh gốc vẫn được giữ nguyên.</string>
     <string name="metering_mode">Đo sáng</string>
     <string name="metering_spot">Đo sáng điểm</string>
     <string name="metering_center_weighted">Đo sáng trung tâm</string>
@@ -1376,8 +1376,8 @@
     <string name="fotufilm_value_seconds">%1$s giây</string>
     <string name="fotufilm_value_minutes">%1$s phút</string>
     <string name="fotufilm_value_years">%1$s năm</string>
-    <string name="ai_denoise_model_title">Mô hình khử nhiễu AI</string>
-    <string name="ai_denoise_model_description">Khử nhiễu AI cần mô hình SCUNet (khoảng 47 MB). Tải xuống ngay? Mô hình được lưu riêng trong ứng dụng.</string>
+    <string name="ai_denoise_model_title">Mô hình AI MAX</string>
+    <string name="ai_denoise_model_description">AI MAX cần mô hình SCUNet (khoảng 47 MB). Tải về điện thoại một lần? AI chạy trực tiếp trên máy; ảnh của bạn không bị tải lên máy chủ. Mô hình được lưu trong vùng dữ liệu riêng của ứng dụng.</string>
     <string name="hf_model_downloading">Đang tải mô hình… %1$d%%</string>
     <string name="hf_model_installing">Đang xác minh và cài đặt mô hình…</string>
     <string name="hf_model_failed">Không thể tải hoặc xác minh mô hình. Hãy kiểm tra kết nối rồi thử lại.</string>
