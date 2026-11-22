@@ -82,6 +82,7 @@ import com.hinnka.mycamera.ml.DepthModelDownloadState
 import com.hinnka.mycamera.ml.DepthModelManager
 import com.hinnka.mycamera.ml.HfModelSource
 import com.hinnka.mycamera.ml.AiDenoiseModelManager
+import com.hinnka.mycamera.ml.AiSuperResolutionModelManager
 import com.hinnka.mycamera.ml.HfModelState
 import com.hinnka.mycamera.raw.SpectralFilmSelection
 import com.hinnka.mycamera.raw.DngEmbeddedProfile
@@ -628,6 +629,24 @@ fun GalleryEditScreen(
     val aiDenoiseModelState by remember(context.applicationContext) {
         AiDenoiseModelManager.observe(context)
     }.collectAsState()
+    val aiSuperResolutionModelState by remember(context.applicationContext) {
+        AiSuperResolutionModelManager.observe(context)
+    }.collectAsState()
+    var pendingAiSuperResolution by remember { mutableStateOf(false) }
+    val startAiSuperResolution = {
+        viewModel.applyAiSuperResolution(currentEditSourcePhoto) { success ->
+            if (!success) Toast.makeText(context, context.getString(R.string.ai_super_resolution_failed), Toast.LENGTH_LONG).show()
+        }
+    }
+    LaunchedEffect(isPurchased, aiSuperResolutionModelState, pendingAiSuperResolution) {
+        if (!pendingAiSuperResolution) return@LaunchedEffect
+        if (!isPurchased) {
+            pendingAiSuperResolution = false
+        } else if (aiSuperResolutionModelState is HfModelState.Ready) {
+            pendingAiSuperResolution = false
+            startAiSuperResolution()
+        }
+    }
     // AI denoise was requested while its model is missing; applied once the model is installed.
     var pendingAiDenoise by remember { mutableStateOf(false) }
     val showAiDenoiseFailure = {
@@ -1805,6 +1824,27 @@ fun GalleryEditScreen(
                                                 }
                                             }
                                         )
+                                        val isAiSuperResolving by viewModel.isAiSuperResolving.collectAsState()
+                                        val aiSuperResolutionProgress by viewModel.aiSuperResolutionProgress.collectAsState()
+                                        Button(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            enabled = !isAiDenoising && !isAiSuperResolving,
+                                            onClick = {
+                                                if (!viewModel.requireEditPurchase()) return@Button
+                                                if (AiSuperResolutionModelManager.isInstalled(context)) {
+                                                    startAiSuperResolution()
+                                                } else {
+                                                    pendingAiSuperResolution = true
+                                                }
+                                            }
+                                        ) {
+                                            Text(
+                                                if (isAiSuperResolving) stringResource(
+                                                    R.string.ai_super_resolution_processing,
+                                                    aiSuperResolutionProgress * 100
+                                                ) else stringResource(R.string.ai_super_resolution_action)
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.height(8.dp))
                                         // 细节处理调整 (锐化, 降噪, 杂色降噪)
                                         val aperture = editComputationalAperture
@@ -2224,6 +2264,19 @@ fun GalleryEditScreen(
                 }
             },
             confirmButton = {}
+        )
+    }
+
+    if (isPurchased && pendingAiSuperResolution) {
+        var aiSuperResolutionModelSource by remember { mutableStateOf(HfModelSource.preferred(context)) }
+        HfModelDownloadDialog(
+            title = stringResource(R.string.ai_super_resolution_model_title),
+            description = stringResource(R.string.ai_super_resolution_model_description),
+            state = aiSuperResolutionModelState,
+            source = aiSuperResolutionModelSource,
+            onSourceChange = { aiSuperResolutionModelSource = it },
+            onDownload = { AiSuperResolutionModelManager.download(context, aiSuperResolutionModelSource) },
+            onDismiss = { pendingAiSuperResolution = false }
         )
     }
 
