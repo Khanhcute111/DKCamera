@@ -768,7 +768,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
                 }
                 source.recycle()
                 source = null
-                val result = enhanced
+                val result = enhanced ?: throw IllegalStateException("AI Super Resolution returned no image")
                 enhanced = null
                 withContext(Dispatchers.Main) {
                     exportPhoto(photo, result, "AI_ULTRA_4X") { success ->
