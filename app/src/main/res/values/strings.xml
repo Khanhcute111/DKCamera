@@ -1104,10 +1104,10 @@
     <string name="depth_model_download_ready">The depth model is ready.</string>
     <string name="depth_model_retry">Retry</string>
     <string name="depth_model_done">Done</string>
-    <string name="ai_denoise_title">AI Deep Denoise</string>
-    <string name="ai_denoise_description">Use neural network to reconstruct image details</string>
+    <string name="ai_denoise_title">AI MAX Enhancement</string>
+    <string name="ai_denoise_description">On-device SCUNet neural denoising with RAISR detail reconstruction. Photo processing stays on this phone; no image upload.</string>
     <string name="ai_denoise_processing">Processing... %1$.1f%%</string>
-    <string name="ai_denoise_failed">AI Denoise Failed</string>
+    <string name="ai_denoise_failed">AI MAX processing failed. The original photo is unchanged.</string>
 
     <!-- Metering Mode -->
     <string name="metering_mode">Metering</string>
@@ -1478,8 +1478,8 @@
     <string name="fotufilm_value_minutes">%1$s min</string>
     <string name="fotufilm_value_years">%1$s yr</string>
     <!-- /Fotufilm controls -->
-    <string name="ai_denoise_model_title">AI Denoise Model</string>
-    <string name="ai_denoise_model_description">AI denoise needs the SCUNet denoise model (about 47 MB). Download it now? It is stored privately by the app.</string>
+    <string name="ai_denoise_model_title">AI MAX model</string>
+    <string name="ai_denoise_model_description">AI MAX needs the SCUNet model (about 47 MB). Download it once to this phone? Inference runs locally; your photos are never uploaded. The model is stored in app-private storage.</string>
     <string name="hf_model_downloading">Downloading model… %1$d%%</string>
     <string name="hf_model_installing">Verifying and installing model…</string>
     <string name="hf_model_failed">The model could not be downloaded or verified. Check your connection and try again.</string>
