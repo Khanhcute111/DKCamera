@@ -7248,6 +7248,20 @@ class Camera2Controller(private val context: Context) {
         creativeRecipeParams: ColorRecipeParams? = null,
         orientationOffsetDegrees: Int = 0
     ) {
+        // Encoder, muxer and GL renderer preparation is synchronous. The shutter callback
+        // originates on the UI thread, so marshal the entire preparation to CameraBackground
+        // to prevent the camera screen from freezing while recording is initialized.
+        val handler = cameraHandler
+        if (handler != null && Looper.myLooper() != handler.looper) {
+            handler.post {
+                startVideoRecording(
+                    creativeLutConfig = creativeLutConfig,
+                    creativeRecipeParams = creativeRecipeParams,
+                    orientationOffsetDegrees = orientationOffsetDegrees,
+                )
+            }
+            return
+        }
         if (_state.value.captureMode != CaptureMode.VIDEO ||
             _state.value.videoRecordingState.isRecording ||
             _state.value.videoRecordingState.isProcessing
