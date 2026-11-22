@@ -2,7 +2,7 @@ name: DKCaMera Android Debug Build
 
 on:
   push:
-    branches: [dkcamera-branding]
+    branches: [dkcamera-branding, dkcamera-video-zoom-ai-fixes]
   workflow_dispatch:
 
 permissions:
