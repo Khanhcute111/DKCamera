@@ -38,8 +38,8 @@ object AiDenoiser {
     /** Minimum overlap between neighbouring tiles; blended with smoothstep weights. */
     private const val OVERLAP = 32
 
-    /** Model occupies the full progress bar; no post-model resampling is used at native resolution. */
-    private const val MODEL_PROGRESS = 1f
+    /** Reserve the final 10% for output finalization and the large-image RAISR fallback. */
+    private const val MODEL_PROGRESS = 0.9f
 
     init {
         System.loadLibrary("my-native-lib")
