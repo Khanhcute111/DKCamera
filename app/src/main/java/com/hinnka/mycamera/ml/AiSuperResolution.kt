@@ -66,10 +66,8 @@ object AiSuperResolution {
             val output = Bitmap.createBitmap(
                 outputWidth.toInt(),
                 outputHeight.toInt(),
-                Bitmap.Config.ARGB_8888,
-                true,
-                input.colorSpace
-            )
+                Bitmap.Config.ARGB_8888
+            ).also { bitmap -> input.colorSpace?.let(bitmap::setColorSpace) }
             val inputPixels = IntArray(INPUT * INPUT)
             val inputTensor = FloatArray(INPUT_ELEMENTS)
             var completed = 0
